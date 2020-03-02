@@ -1,0 +1,166 @@
+<html>
+
+<head>
+    <title>Picture Filters</title>
+    <link rel="shortcut icon" type="image/x-icon" href="icon5.png" />
+    <!--Remember Your favicon-->
+    <style>
+        input{
+            background-color: #555555;
+            margin: 4px 2px;
+            color: white;
+            font-size: 16px;
+            text-decoration: none;
+            border: none;
+        }
+    </style>
+    <script>
+        var orgCanvas; //global original canvas
+        var orgCanvasContents;//global original canvas contents
+        function setUp()
+        {
+            //Set up the "original canvas" to draw or print shapes to
+            orgCanvas = document.getElementById("orgCanvas");
+            var orgCanvasContents = orgCanvas.getContext("2d");
+            base_image = new Image();
+            base_image.src = "mario.jpg";
+            base_image.onload = function(){
+                orgCanvasContents.drawImage(base_image, 0, 0, 1024, 1024);
+            }
+            //Print a red rectangle of dimensions 10 X 50 to screen
+            // orgCanvasContents.fillStyle = "red";
+            // orgCanvasContents.fillRect(10, 10, 50, 50);
+        }
+
+        function makeBlack()
+        {
+            //new  canvas for repaint
+            var canvas2 = document.getElementById("reCanvas");
+            var contents =  canvas2.getContext("2d");
+
+            //get the image data from the original canvas
+            var orgCanvasContents = orgCanvas.getContext("2d");
+            var imgData = orgCanvasContents.getImageData(10, 10, 1024, 1024);
+
+            //This is the array of pixels from rectangle
+            var pixels = imgData.data
+
+            for(var i = 0; i < pixels.length; i+=4) //visits each pixel
+            {
+                pixels[i] =  0;  //red
+                pixels[i+1] = 0; //green
+                pixels[i+2] = 0; //blue
+            }
+
+            //Repaint the modified recangle with new pixel values to new canvas
+            contents.putImageData(imgData, 10, 70);
+        }
+
+
+        function makeAChange()
+        {
+            //new  canvas for repaint
+            var canvas2 = document.getElementById("reCanvas");
+            var contents =  canvas2.getContext("2d");
+
+            //get the image data from the original canvas
+            var orgCanvasContents = orgCanvas.getContext("2d");
+            var imgData = orgCanvasContents.getImageData(10, 10, 1024, 1024);
+
+            //This is the array of pixels from rectangle
+            var pixels = imgData.data
+
+            for(var i = 0; i < pixels.length; i+=4) //visits each pixel
+            {
+                pixels[i] =  pixels[i] - 30;  //red
+                pixels[i+1] = pixels[i+1]/5; //green
+                pixels[i+2] = pixels[i+1] + pixels[i] ; //blue
+            }
+
+            //Repaint the modified recangle with new pixel values to new canvas
+            contents.putImageData(imgData, 10, 70);
+        }
+
+        function makeRandom(){
+            var canvas2 = document.getElementById("reCanvas");
+            var contents = canvas2.getContext("2d");
+
+            var orgCanvasContents = orgCanvas.getContext("2d");
+            var imgData = orgCanvasContents.getImageData(10, 10, 1024, 1024);
+            var pixels = imgData.data;
+
+            for(var i = 0; i < pixels.length; i++){
+                if(i%4!=3){
+                    pixels[i] = Math.random()*255;
+                }
+            }
+
+            contents.putImageData(imgData, 10, 70);
+        }
+
+        function grayScale(){
+            var canvas2 = document.getElementById("reCanvas");
+            var contents = canvas2.getContext("2d");
+
+            var orgCanvasContents = orgCanvas.getContext("2d");
+            var imgData = orgCanvasContents.getImageData(10, 10, 1024, 1024);
+            var pixels = imgData.data;
+
+            for(var i = 0; i < pixels.length; i+=4){
+                var red = pixels[i];
+                var green = pixels[i+1];
+                var blue = pixels[i+2];
+                var average = (red+green+blue)/3;
+                pixels[i] = average;
+                pixels[i+1] = average;
+                pixels[i+2] = average;
+            }
+
+            contents.putImageData(imgData, 10, 70);
+        }
+
+        function makeContrast(){
+            var canvas2 = document.getElementById("reCanvas");
+            var contents = canvas2.getContext("2d");
+
+            var orgCanvasContents = orgCanvas.getContext("2d");
+            var imgData = orgCanvasContents.getImageData(10, 10, 1024, 1024);
+            var pixels = imgData.data;
+
+            for(var i = 0; i < pixels.length; i+=4){
+                var red = pixels[i];
+                var green = pixels[i+1];
+                var blue = pixels[i+2];
+                var average = (red+green+blue)/3;
+                if(average>=255/2){
+                    pixels[i] = 255;
+                    pixels[i+1] = 255;
+                    pixels[i+2] = 255;
+                }else{
+                    pixels[i] = 0;
+                    pixels[i+1] = 0;
+                    pixels[i+2] = 0;
+                }
+            }
+
+            contents.putImageData(imgData, 10, 70);
+        }
+    </script>
+</head>
+<body onload = "setUp()">
+<center>
+    <div>
+        <input type = "button" value = "Make Black" onclick = "makeBlack()">
+        <input type = "button" value = "Make a Change" onclick = "makeAChange()">
+        <input type = "button" value = "Make Random" onclick = "makeRandom()">
+        <input type = "button" value = "Make Grayscale" onclick = "grayScale()">
+        <input type = "button" value = "Make Contrast" onclick = "makeContrast()">
+</center>
+<p>Image to use:</p>
+<canvas id="orgCanvas" width="1024" height="1024"></canvas>
+<p>Canvas:</p>
+<canvas id="reCanvas" width="1024" height="1024"></canvas>
+</div>
+
+</body>
+</html>
